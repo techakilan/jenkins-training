@@ -1,0 +1,26 @@
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
+    agent any
+    tools {
+        maven 'm3'
+        jdk 'jdk11'
+    }
+    stages {
+                stage ('Initialize') {
+                    steps {
+                        sh '''
+                            echo "Compiling Maven Project"
+                            mvn compile
+                        '''
+                    }
+                }
+                stage ('Package') {
+                    steps {
+                        sh '''
+                            echo "Packaging Maven Project"
+                            mvn package
+                        '''
+                    }
+                }
+    }
+}
