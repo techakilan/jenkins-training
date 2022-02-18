@@ -6,6 +6,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "Compiling Maven Project"
+                            cd maven-pipeline
                             mvn compile
                         '''
                     }
