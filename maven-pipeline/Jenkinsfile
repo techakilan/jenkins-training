@@ -14,7 +14,7 @@ pipeline {
                 stage ('Test') {
                     steps {
                         sh '''
-                            echo "Compiling Maven Project"
+                            echo "Testing Maven Project"
                             cd maven-pipeline
                             mvn test
                         '''
