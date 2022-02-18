@@ -15,6 +15,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "Packaging Maven Project"
+                            cd maven-pipeline
                             mvn package
                         '''
                     }
