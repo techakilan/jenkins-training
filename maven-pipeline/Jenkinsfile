@@ -11,6 +11,15 @@ pipeline {
                         '''
                     }
                 }
+                stage ('Test') {
+                    steps {
+                        sh '''
+                            echo "Compiling Maven Project"
+                            cd maven-pipeline
+                            mvn test
+                        '''
+                    }
+                }
                 stage ('Package') {
                     steps {
                         sh '''
