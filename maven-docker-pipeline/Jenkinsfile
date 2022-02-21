@@ -2,12 +2,26 @@
 pipeline {
     agent any
     stages {
+        stage('Checkout') {
+            steps {
+                sh '''
+                    cleanWs()
+                    checkout scm
+                '''
+            }
+        }
         stage('Unit Test') {
             steps {
                 sh '''
                     cd maven-docker-pipeline
-                    mvn clean
                     mvn test
+                '''
+            }
+        }
+        stage('Package') {
+            steps {
+                sh '''
+                    cd maven-docker-pipeline
                     mvn package
                 '''
             }
