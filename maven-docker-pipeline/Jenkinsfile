@@ -1,0 +1,9 @@
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
+    agent any
+    stages {
+        stage('Unit Test') {
+            sh 'mvn test'
+        }
+    }
+}
