@@ -1,3 +1,66 @@
-pipeline{
-    
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
+    agent any
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
+    }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                sh '''
+                    cleanWs()
+                    checkout scm
+                '''
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                sh '''
+                    cd maven-docker-pipeline
+                    mvn test
+                '''
+            }
+        }
+        stage('Package as WAR file') {
+            steps {
+                sh '''
+                    cd maven-docker-pipeline
+                    mvn package
+                '''
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    cd maven-docker-pipeline
+                    docker build -f Dockerfile-update -t  westerlytutors/hello-springboot-tomcat:latest .
+                '''
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('Push Image to Dockerhub') {
+            steps {
+                sh 'docker push westerlytutors/hello-springboot-tomcat:latest'
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+        }
+    }
 }
