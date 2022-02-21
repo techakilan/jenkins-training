@@ -52,6 +52,8 @@ pipeline {
             steps {
                 sh 'docker push westerlytutors/hello-springboot-tomcat:1.0'
                 sh 'docker push westerlytutors/hello-springboot-tomcat:latest'
+                sh 'docker rmi westerlytutors/hello-springboot-tomcat:1.0'
+                sh 'docker rmi westerlytutors/hello-springboot-tomcat:latest'
             }
         }
     }
