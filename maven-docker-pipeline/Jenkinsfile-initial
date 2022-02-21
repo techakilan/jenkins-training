@@ -51,6 +51,7 @@ pipeline {
         stage('Push Image to Dockerhub') {
             steps {
                 sh 'docker push westerlytutors/hello-springboot-tomcat:1.0'
+                sh 'docker push westerlytutors/hello-springboot-tomcat:latest'
             }
         }
     }
