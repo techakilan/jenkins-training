@@ -66,6 +66,7 @@ pipeline {
                     notFailBuild: true,
                     patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
                                [pattern: '.propsfile', type: 'EXCLUDE']])
+            sh 'docker image prune'
             sh 'docker logout'
         }
     }
