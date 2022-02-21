@@ -5,6 +5,9 @@ pipeline {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
     }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -22,12 +25,30 @@ pipeline {
                 '''
             }
         }
-        stage('Package') {
+        stage('Package as WAR file') {
             steps {
                 sh '''
                     cd maven-docker-pipeline
                     mvn package
                 '''
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    cd maven-docker-pipeline
+                    docker build -t westerlytutors/hello-springboot-tomcat:latest .
+                '''
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('Push Image to Dockerhub') {
+            steps {
+                sh 'docker push westerlytutors/hello-springboot-tomcat:latest'
             }
         }
     }
