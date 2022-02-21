@@ -37,7 +37,9 @@ pipeline {
             steps {
                 sh '''
                     cd maven-docker-pipeline
-                    docker build -f Dockerfile-initial -t  westerlytutors/hello-springboot-tomcat:1.0 .
+                    docker build -f Dockerfile-initial -t  westerlytutors/hello-springboot-tomcat:1.0  .
+                    docker image tag westerlytutors/hello-springboot-tomcat:1.0 \
+                    westerlytutors/hello-springboot-tomcat:latest
                 '''
             }
         }
