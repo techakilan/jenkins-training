@@ -6,7 +6,9 @@ pipeline {
             steps {
                 sh '''
                     cd maven-docker-pipeline
+                    mvn clean
                     mvn test
+                    mvn package
                 '''
             }
         }
