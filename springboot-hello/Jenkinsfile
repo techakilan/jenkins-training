@@ -1,0 +1,73 @@
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
+    agent any
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout()
+    }
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                sh '''
+                    cleanWs()
+                    checkout scm
+                '''
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                sh '''
+                    cd springboot-hello
+                    mvn test
+                '''
+            }
+        }
+        stage('Package as JAR file') {
+            steps {
+                sh '''
+                    cd springboot-hello
+                    mvn package
+                '''
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                sh '''
+                    cd springboot-hello
+                    docker build -f Dockerfile -t  westerlytutors/springboot-hello .
+                    docker image tag westerlytutors/springboot-hello:1.0.0 \
+                    westerlytutors/springboot-hello:latest
+                '''
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+            }
+        }
+        stage('Push Image to Dockerhub') {
+            steps {
+                sh 'docker push westerlytutors/springboot-hello:1.0.0'
+                sh 'docker push westerlytutors/springboot-hello:latest'
+                sh 'docker rmi westerlytutors/springboot-hello:1.0.0'
+                sh 'docker rmi westerlytutors/springboot-hello:latest'
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true,
+                    patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
+                               [pattern: '.propsfile', type: 'EXCLUDE']])
+            sh 'docker image prune'
+            sh 'docker logout'
+        }
+    }
+}
