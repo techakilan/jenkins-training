@@ -37,7 +37,7 @@ pipeline {
             steps {
                 sh '''
                     cd springboot-hello
-                    docker build -f Dockerfile -t  westerlytutors/springboot-hello .
+                    docker build -f Dockerfile -t  westerlytutors/springboot-hello:1.0.0 .
                     docker image tag westerlytutors/springboot-hello:1.0.0 \
                     westerlytutors/springboot-hello:latest
                 '''
